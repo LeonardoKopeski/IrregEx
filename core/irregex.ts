@@ -1,7 +1,6 @@
 import { Matcher } from './matchers'
 import { EOI, SOI } from './symbols'
 
-
 /**
  * irregular expression, an opinionated alternative to RegExp
  */
@@ -46,8 +45,11 @@ class IrregularExpressionTester{
     ]
 
     let matcherOffset = 0
+    let inputOffset = 0
     let input = ''
-    for (const inputChar of chars) {
+
+    while (inputOffset < chars.length) {
+      const inputChar = chars[inputOffset++]
       const matcher = this.matchers[matcherOffset]
 
       let matcherOutput
@@ -58,13 +60,20 @@ class IrregularExpressionTester{
         matcherOutput = matcher.match(input)
       }
 
-      if (matcherOutput === 'MATCH') {
-        input = ''
+      if (matcherOutput !== 'CONTINUE') input = ''
+
+      if (matcherOutput === 'MATCH' || !matcher.mandatory) {
         matcherOffset++
-        if (matcherOffset === this.matchers.length) return true
       } else if (matcherOutput === 'NO_MATCH') {
-        input = ''
         matcherOffset = 0
+      }
+
+      if (matcherOutput === 'NO_MATCH' && !matcher.mandatory) {
+        inputOffset--
+      }
+
+      if (matcherOutput === 'MATCH' && matcherOffset === this.matchers.length) {
+        return true
       }
     }
 
