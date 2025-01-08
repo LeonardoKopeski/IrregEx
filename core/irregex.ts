@@ -1,4 +1,4 @@
-import type { Matcher } from './matchers'
+import { Matcher } from './matchers'
 import { EOI, SOI } from './symbols'
 
 
@@ -7,6 +7,7 @@ import { EOI, SOI } from './symbols'
  */
 export class IrregularExpression{
   private readonly matchers: Matcher[] = []
+  private flags: ('FULL_MATCH')[] = []
 
   addMatcher(matcher: Matcher | Matcher[]) {
     if (Array.isArray(matcher)) {
@@ -18,7 +19,25 @@ export class IrregularExpression{
     this.matchers.push(matcher)
     return this
   }
+
+  addFlag(flag: 'FULL_MATCH') {
+    this.flags.push(flag)
+    return this
+  }
   
+  create() {
+    const matchers = [...this.matchers]
+    if (this.flags.includes('FULL_MATCH')) {
+      matchers.unshift(Matcher.StartOfInput())
+      matchers.push(Matcher.EndOfInput())
+    }
+    return new IrregularExpressionTester(matchers)
+  }
+}
+
+class IrregularExpressionTester{
+  constructor(private readonly matchers: Matcher[]) {}
+
   test(value: string) {
     const chars = [
       SOI,

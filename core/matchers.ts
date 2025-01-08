@@ -1,4 +1,4 @@
-import { EOI, type SOI } from './symbols'
+import { EOI, SOI } from './symbols'
 
 export abstract class Matcher {
   constructor() {}
@@ -8,6 +8,10 @@ export abstract class Matcher {
 
   static Literal(value: string) {
     return new LiteralMatcher(value)
+  }
+
+  static Number() {
+    return new NumberMatcher()
   }
 
   static LineBreak() {
@@ -20,6 +24,10 @@ export abstract class Matcher {
 
   static EndOfInput() {
     return new EndOfInputMatcher()
+  }
+
+  static StartOfInput() {
+    return new StartOfInputMatcher()
   }
 
   static repeat(amount: number) {
@@ -107,5 +115,28 @@ class EndOfInputMatcher extends Matcher{
   matchSymbol(input: symbol) {
     if (input === EOI) return 'MATCH'
     return 'NO_MATCH'
+  }
+}
+
+class StartOfInputMatcher extends Matcher{
+  match() {
+    return 'NO_MATCH' as const
+  }
+
+  matchSymbol(input: symbol) {
+    if (input === SOI) return 'MATCH'
+    return 'NO_MATCH'
+  }
+}
+
+const numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'] as const
+class NumberMatcher extends Matcher {
+  match(input: string) {
+    if ((numbers as ReadonlyArray<string>).includes(input)) return 'MATCH'
+    return 'NO_MATCH'
+  }
+
+  matchSymbol() {
+    return 'NO_MATCH' as const
   }
 }
