@@ -2,8 +2,9 @@ import { EOI, SOI } from './symbols'
 
 export abstract class Matcher {
   constructor() {}
+
+  repeat: [min: number, max: number] = [1, 1]
   
-  readonly mandatory: boolean = true
   abstract match(input: string): 'MATCH' | 'NO_MATCH' | 'CONTINUE'
   abstract matchSymbol(input: symbol): 'MATCH' | 'NO_MATCH'
 
@@ -37,8 +38,9 @@ export abstract class Matcher {
         if (typeof target[prop] === 'function') {
           return (...args: unknown[]) => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const result = (target[prop] as any)(...args)
-            return new Array(amount).fill(result)
+            const result = (target[prop] as any)(...args) as Matcher
+            result.repeat = [amount, amount]
+            return result
           }
         }
         return undefined
@@ -52,8 +54,9 @@ export abstract class Matcher {
         if (typeof target[prop] === 'function') {
           return (...args: unknown[]) => {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const result = (target[prop] as any)(...args)
-            return new OptionalMatcher(result)
+            const result = (target[prop] as any)(...args) as Matcher
+            result.repeat = [0, 1]
+            return result
           }
         }
         return undefined
@@ -154,20 +157,5 @@ class NumberMatcher extends Matcher {
 
   matchSymbol() {
     return 'NO_MATCH' as const
-  }
-}
-
-class OptionalMatcher extends Matcher{
-  readonly mandatory: boolean = false
-  constructor(readonly matcher: Matcher) {
-    super()
-  }
-
-  match(input: string) {
-    return this.matcher.match(input)
-  }
-
-  matchSymbol(input: typeof EOI | typeof SOI) {
-    return this.matcher.matchSymbol(input)
   }
 }

@@ -1,4 +1,4 @@
-import { test as it, expect } from 'bun:test'
+import { it, expect } from 'bun:test'
 import { IrregularExpression } from './core/irregex'
 import { Matcher } from './core/matchers'
 
@@ -28,4 +28,19 @@ it('should not match if repeated twice matcher is not present', () => {
 
   // Assert
   expect(result).toBe(false)
+})
+
+it('should match if repeated twice matcher with word', () => {
+  // Initialize
+  const irregularExpression = new IrregularExpression()
+    .addMatcher(Matcher.Literal('hey, '))
+    .addMatcher(Matcher.repeat(2).Literal('hello '))
+    .addMatcher(Matcher.Literal('world'))
+    .create()
+
+  // Test
+  const result = irregularExpression.test('hey, hello hello world')
+
+  // Assert
+  expect(result).toBe(true)
 })

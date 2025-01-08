@@ -8,13 +8,7 @@ export class IrregularExpression{
   private readonly matchers: Matcher[] = []
   private flags: ('FULL_MATCH')[] = []
 
-  addMatcher(matcher: Matcher | Matcher[]) {
-    if (Array.isArray(matcher)) {
-      for (const m of matcher) {
-        this.addMatcher(m)
-      }
-      return this
-    }
+  addMatcher(matcher: Matcher) {
     this.matchers.push(matcher)
     return this
   }
@@ -46,6 +40,7 @@ class IrregularExpressionTester{
 
     let matcherOffset = 0
     let inputOffset = 0
+    let repetitions = 0
     let input = ''
 
     while (inputOffset < chars.length) {
@@ -60,20 +55,36 @@ class IrregularExpressionTester{
         matcherOutput = matcher.match(input)
       }
 
-      if (matcherOutput !== 'CONTINUE') input = ''
+      // console.log({
+      //   repetitions,
+      //   input,
+      //   matcherOutput,
+      //   matcher: matcher.constructor.name
+      // }) // TEMP
 
-      if (matcherOutput === 'MATCH' || !matcher.mandatory) {
-        matcherOffset++
-      } else if (matcherOutput === 'NO_MATCH') {
-        matcherOffset = 0
-      }
+      switch (matcherOutput) {
+        case 'MATCH':
+          repetitions++
 
-      if (matcherOutput === 'NO_MATCH' && !matcher.mandatory) {
-        inputOffset--
-      }
-
-      if (matcherOutput === 'MATCH' && matcherOffset === this.matchers.length) {
-        return true
+          input = ''
+          if (repetitions >= matcher.repeat[1]) {
+            matcherOffset++
+            repetitions = 0
+          }
+          
+          if (matcherOffset === this.matchers.length) return true
+          break
+        case 'NO_MATCH':
+          input = ''
+          repetitions++
+          if (repetitions > matcher.repeat[0]) {
+            matcherOffset++
+            inputOffset--
+          } else {
+            matcherOffset = 0
+          }
+          repetitions = 0
+          break
       }
     }
 
