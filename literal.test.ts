@@ -50,3 +50,16 @@ it('should not match if a word is missing', () => {
   // Assert
   expect(result).toBe(false)
 })
+
+it('should match if a word is missing', () => {
+  // Initialize
+  const irregularExpression = new IrregularExpression()
+    .addMatcher(Matcher.not.Literal('planet'))
+    .create()
+
+  // Test
+  const result = irregularExpression.test('hello world')
+
+  // Assert
+  expect(result).toBe(true)
+})

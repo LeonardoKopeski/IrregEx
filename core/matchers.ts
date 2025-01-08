@@ -33,35 +33,23 @@ export abstract class Matcher {
   }
 
   static repeat(amount: number) {
-    return new Proxy(Matcher, {
-      get(target: typeof Matcher, prop: keyof typeof Matcher) {
-        if (typeof target[prop] === 'function') {
-          return (...args: unknown[]) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const result = (target[prop] as any)(...args) as Matcher
-            result.repeat = [amount, amount]
-            return result
-          }
-        }
-        return undefined
-      }
-    })
+    return this.repeatBetween(amount, amount)
+  }
+
+  static repeatAtLeast(amount: number) {
+    return this.repeatBetween(amount, Infinity)
+  }
+
+  static repeatAtMost(amount: number) {
+    return this.repeatBetween(0, amount)
+  }
+
+  static repeatIndefinitely() {
+    return this.repeatBetween(0, Infinity)
   }
 
   static get optional() {
-    return new Proxy(Matcher, {
-      get(target: typeof Matcher, prop: keyof typeof Matcher) {
-        if (typeof target[prop] === 'function') {
-          return (...args: unknown[]) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const result = (target[prop] as any)(...args) as Matcher
-            result.repeat = [0, 1]
-            return result
-          }
-        }
-        return undefined
-      }
-    })
+    return this.repeatBetween(0, 1)
   }
 
   static get not() {
@@ -72,6 +60,22 @@ export abstract class Matcher {
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const result = (target[prop] as any)(...args)
             return new NotMatcher(result)
+          }
+        }
+        return undefined
+      }
+    })
+  }
+
+  static repeatBetween(min: number, max: number) {
+    return new Proxy(Matcher, {
+      get(target: typeof Matcher, prop: keyof typeof Matcher) {
+        if (typeof target[prop] === 'function') {
+          return (...args: unknown[]) => {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const result = (target[prop] as any)(...args) as Matcher
+            result.repeat = [min, max]
+            return result
           }
         }
         return undefined

@@ -44,3 +44,74 @@ it('should match if repeated twice matcher with word', () => {
   // Assert
   expect(result).toBe(true)
 })
+
+it('should match with repeated at least twice', () => {
+  // Initialize
+  const irregularExpression = new IrregularExpression()
+    .addMatcher(Matcher.Literal('he'))
+    .addMatcher(Matcher.repeatAtLeast(2).Literal('l'))
+    .addMatcher(Matcher.Literal('o'))
+    .create()
+
+  // Test
+  const result = irregularExpression.test('helllo world')
+
+  // Assert
+  expect(result).toBe(true)
+})
+it('should not match with not repeating at least twice', () => {
+  // Initialize
+  const irregularExpression = new IrregularExpression()
+    .addMatcher(Matcher.Literal('he'))
+    .addMatcher(Matcher.repeatAtLeast(2).Literal('l'))
+    .addMatcher(Matcher.Literal('o'))
+    .create()
+
+  // Test
+  const result = irregularExpression.test('helo world')
+
+  // Assert
+  expect(result).toBe(false)
+})
+it('should match with repeated at most three times', () => {
+  // Initialize
+  const irregularExpression = new IrregularExpression()
+    .addMatcher(Matcher.Literal('he'))
+    .addMatcher(Matcher.repeatAtMost(3).Literal('l'))
+    .addMatcher(Matcher.Literal('o'))
+    .create()
+
+  // Test
+  const result = irregularExpression.test('helllo world')
+
+  // Assert
+  expect(result).toBe(true)
+})
+it('should not match with not repeating at most three times', () => {
+  // Initialize
+  const irregularExpression = new IrregularExpression()
+    .addMatcher(Matcher.Literal('he'))
+    .addMatcher(Matcher.repeatAtMost(3).Literal('l'))
+    .addMatcher(Matcher.Literal('o'))
+    .create()
+
+  // Test
+  const result = irregularExpression.test('hellllo world')
+
+  // Assert
+  expect(result).toBe(false)
+})
+it('should match with repeating indefinitely', () => {
+  // Initialize
+  const irregularExpression = new IrregularExpression()
+    .addMatcher(Matcher.Literal('he'))
+    .addMatcher(Matcher.repeatIndefinitely().Literal('l'))
+    .addMatcher(Matcher.Literal('o'))
+    .create()
+
+  // Test
+  const result = irregularExpression.test('helllllllo world')
+
+  // Assert
+  expect(result).toBe(true)
+})
