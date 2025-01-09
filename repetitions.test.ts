@@ -127,3 +127,16 @@ it('should match with repeating indefinitely', () => {
   // Assert
   expect(result).toBe(true)
 })
+
+it('should not match if repeating amount is not achieved', () => {
+  // Initialize
+  const irregularExpression = new IrregularExpression()
+    .addMatcher(Matcher.repeat(9).Number())
+    .create()
+
+  // Test
+  const result = irregularExpression.test('1')
+
+  // Assert
+  expect(result).toBe(false)
+})

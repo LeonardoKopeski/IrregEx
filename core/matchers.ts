@@ -1,3 +1,4 @@
+import { letters, lowercaseLetters, numbers, uppercaseLetters } from './charArrays'
 import { CONTINUE, MATCH, NO_MATCH, type MatchStringOutput, type MatchSymbolOutput } from './matcherOutputs'
 import { EOI, SOI } from './symbols'
 
@@ -16,16 +17,28 @@ export abstract class Matcher {
     return NO_MATCH
   }
 
+  static Or(options: Matcher[]) {
+    return new OrMatcher(options)
+  }
+
   static Literal(value: string) {
     return new LiteralMatcher(value)
   }
 
   static Number() {
-    return new NumberMatcher()
+    return new EnumMatcher(numbers)
   }
 
   static Letter() {
-    return new LetterMatcher()
+    return new EnumMatcher(letters)
+  }
+
+  static LowercaseLetter() {
+    return new EnumMatcher(lowercaseLetters)
+  }
+
+  static UppercaseLetter() {
+    return new EnumMatcher(uppercaseLetters)
   }
 
   static LineBreak() {
@@ -37,11 +50,11 @@ export abstract class Matcher {
   }
 
   static EndOfInput() {
-    return new EndOfInputMatcher()
+    return new SymbolMatcher(EOI)
   }
 
   static StartOfInput() {
-    return new StartOfInputMatcher()
+    return new SymbolMatcher(SOI)
   }
 
   static repeat(amount: number) {
@@ -141,33 +154,39 @@ class AnyMatcher extends Matcher {
   }
 }
 
-class EndOfInputMatcher extends Matcher{
+class SymbolMatcher extends Matcher{
+  constructor(readonly symbol: symbol) {
+    super()
+  }
+
   matchSymbol(input: symbol) {
-    if (input === EOI) return MATCH
+    if (input === this.symbol) return MATCH
     return NO_MATCH
   }
 }
 
-class StartOfInputMatcher extends Matcher{
-  matchSymbol(input: symbol) {
-    if (input === SOI) return MATCH
-    return NO_MATCH
+class EnumMatcher extends Matcher {
+  constructor(readonly values: ReadonlyArray<string>) {
+    super()
   }
-}
 
-const numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'] as const
-class NumberMatcher extends Matcher {
   match(input: string) {
-    if ((numbers as ReadonlyArray<string>).includes(input)) return MATCH
+    if (this.values.includes(input)) return MATCH
     return NO_MATCH
   }
 }
 
+class OrMatcher extends Matcher {
+  constructor(readonly options: Matcher[]) {
+    super()
+  }
 
-const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'] as const
-class LetterMatcher extends Matcher {
   match(input: string) {
-    if ((letters as ReadonlyArray<string>).includes(input)) return MATCH
+    for (const option of this.options) {
+      const result = option.match(input)
+      if (result !== NO_MATCH) return result
+    }
+
     return NO_MATCH
   }
 }

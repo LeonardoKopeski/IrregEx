@@ -16,11 +16,11 @@ it('should match for a valid letter set', () => {
   expect(result).toBe(true)
 })
 
-// RegEx equivalent: /\w{18}/
-it.todo('should not match for a valid letter set but with wrong case', () => {
+// RegEx equivalent: /[A-Z]{18}/
+it('should not match for a valid letter set but with wrong case', () => {
   // Initialize
   const irregularExpression = new IrregularExpression()
-    .addMatcher(Matcher.repeat(18).Letter())
+    .addMatcher(Matcher.repeat(18).UppercaseLetter())
     .create()
   
   // Test
