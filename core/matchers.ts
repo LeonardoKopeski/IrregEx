@@ -52,6 +52,10 @@ export abstract class Matcher {
     return this.repeatBetween(0, Infinity)
   }
 
+  static repeatAtLeastOnce() {
+    return this.repeatBetween(1, Infinity)
+  }
+
   static get optional() {
     return this.repeatBetween(0, 1)
   }

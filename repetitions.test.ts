@@ -2,6 +2,7 @@ import { it, expect } from 'bun:test'
 import { IrregularExpression } from './core/irregex'
 import { Matcher } from './core/matchers'
 
+// RegEx equivalent: /hel{2}/
 it('should match with repeated twice matcher', () => {
   // Initialize
   const irregularExpression = new IrregularExpression()
@@ -16,6 +17,7 @@ it('should match with repeated twice matcher', () => {
   expect(result).toBe(true)
 })
 
+// RegEx equivalent: /hez{2}/
 it('should not match if repeated twice matcher is not present', () => {
   // Initialize
   const irregularExpression = new IrregularExpression()
@@ -30,6 +32,7 @@ it('should not match if repeated twice matcher is not present', () => {
   expect(result).toBe(false)
 })
 
+// RegEx equivalent: /hey, (hello ){2}world/
 it('should match if repeated twice matcher with word', () => {
   // Initialize
   const irregularExpression = new IrregularExpression()
@@ -45,6 +48,7 @@ it('should match if repeated twice matcher with word', () => {
   expect(result).toBe(true)
 })
 
+// RegEx equivalent: /hel{2,}o/
 it('should match with repeated at least twice', () => {
   // Initialize
   const irregularExpression = new IrregularExpression()
@@ -59,6 +63,8 @@ it('should match with repeated at least twice', () => {
   // Assert
   expect(result).toBe(true)
 })
+
+// RegEx equivalent: /hel{2,}o/
 it('should not match with not repeating at least twice', () => {
   // Initialize
   const irregularExpression = new IrregularExpression()
@@ -73,6 +79,8 @@ it('should not match with not repeating at least twice', () => {
   // Assert
   expect(result).toBe(false)
 })
+
+// RegEx equivalent: /hel{,3}o/
 it('should match with repeated at most three times', () => {
   // Initialize
   const irregularExpression = new IrregularExpression()
@@ -87,6 +95,8 @@ it('should match with repeated at most three times', () => {
   // Assert
   expect(result).toBe(true)
 })
+
+// RegEx equivalent: /hel{,3}o/
 it('should not match with not repeating at most three times', () => {
   // Initialize
   const irregularExpression = new IrregularExpression()
@@ -101,6 +111,8 @@ it('should not match with not repeating at most three times', () => {
   // Assert
   expect(result).toBe(false)
 })
+
+// RegEx equivalent: /hel*o/
 it('should match with repeating indefinitely', () => {
   // Initialize
   const irregularExpression = new IrregularExpression()
