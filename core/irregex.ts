@@ -1,6 +1,13 @@
 import { Matcher } from './matchers'
 import { EOI, SOI } from './symbols'
 
+interface MatchingState{
+  index: number
+  minRepetitions: number
+  maxRepetitions: number
+  repetitions: number
+} 
+
 /**
  * irregular expression, an opinionated alternative to RegExp
  */
@@ -28,24 +35,23 @@ export class IrregularExpression{
   }
 }
 
-class IrregularExpressionTester{
-  constructor(private readonly matchers: Matcher[]) {}
+class IrregularExpressionTester {
+  constructor(private readonly matchers: Matcher[]) { }
 
   test(value: string) {
-    const chars = [
-      SOI,
-      ...value.split(''),
-      EOI
-    ]
+    const chars = this._tokenize(value)
 
-    let matcherOffset = 0
-    let inputOffset = 0
-    let repetitions = 0
+    const matcherState: MatchingState = {
+      index: 0,
+      minRepetitions: this.matchers[0].repeat[0],
+      maxRepetitions: this.matchers[0].repeat[1],
+      repetitions: 0
+    }
     let input = ''
 
-    while (inputOffset < chars.length) {
-      const inputChar = chars[inputOffset++]
-      const matcher = this.matchers[matcherOffset]
+    for (let charIndex = 0; charIndex < chars.length; charIndex++) {
+      const inputChar = chars[charIndex]
+      const matcher = this.matchers[matcherState.index]
 
       let matcherOutput
       if (typeof inputChar === 'symbol') {
@@ -55,39 +61,92 @@ class IrregularExpressionTester{
         matcherOutput = matcher.match(input)
       }
 
-      // console.log({
-      //   repetitions,
-      //   input,
-      //   matcherOutput,
-      //   matcher: matcher.constructor.name
-      // }) // TEMP
+      // If not CONTINUE, reset input cache      
+      const action = this._handleMatcherOutput(matcherOutput, matcherState)
 
-      switch (matcherOutput) {
-        case 'MATCH':
-          repetitions++
+      if (action.undo) charIndex--
+      
+      if (action.inputCache === 'RESET') input = ''
 
-          input = ''
-          if (repetitions >= matcher.repeat[1]) {
-            matcherOffset++
-            repetitions = 0
-          }
-          
-          if (matcherOffset === this.matchers.length) return true
-          break
-        case 'NO_MATCH':
-          input = ''
-          repetitions++
-          if (repetitions > matcher.repeat[0]) {
-            matcherOffset++
-            inputOffset--
-          } else {
-            matcherOffset = 0
-          }
-          repetitions = 0
-          break
-      }
+      if (action.matcher === 'RESET') matcherState.index = 0
+      else if (action.matcher === 'NEXT') matcherState.index++
+
+      if (action.repetitions === 'RESET') matcherState.repetitions = 0
+      else if (action.repetitions === 'NEXT') matcherState.repetitions++
+
+      if (matcherState.index >= this.matchers.length) return true
+      
+      matcherState.minRepetitions = this.matchers[matcherState.index].repeat[0]
+      matcherState.maxRepetitions = this.matchers[matcherState.index].repeat[1]
     }
 
     return false
+  }
+
+  private _tokenize(input: string) {
+    return [
+      SOI,
+      ...input.split(''),
+      EOI
+    ]
+  }
+
+  private _handleMatcherOutput(
+    matcherOutput: 'MATCH' | 'NO_MATCH' | 'CONTINUE',
+    state: MatchingState
+  ): {
+      matcher: 'RESET' | 'NEXT' | 'SAME'
+      repetitions: 'RESET' | 'NEXT' | 'SAME'
+      inputCache: 'RESET' | 'SAME'
+      undo: boolean
+    } {
+    // if MATCH...
+    if (matcherOutput === 'MATCH') {
+      if (state.repetitions + 1 < state.maxRepetitions) {
+        // increase repetition count, unless if it will exceed the max repetitions
+        return {
+          matcher: 'SAME',
+          repetitions: 'NEXT',
+          inputCache: 'RESET',
+          undo: false
+        }
+      } else {
+        return {
+          matcher: 'NEXT',
+          repetitions: 'RESET',
+          inputCache: 'RESET',
+          undo: false
+        }
+      }
+    }
+
+    // if NO_MATCH...
+    if (matcherOutput === 'NO_MATCH') {
+      if (state.repetitions + 1 > state.minRepetitions) {
+        // if repetition count is above the minimum, move to the next matcher
+        return {
+          matcher: 'NEXT',
+          repetitions: 'RESET',
+          inputCache: 'RESET',
+          undo: true
+        }
+      } else {
+        // otherwise, try all matching again
+        return {
+          matcher: 'RESET',
+          repetitions: 'RESET',
+          inputCache: 'RESET',
+          undo: false
+        }
+      }
+    }
+
+    // if CONTINUE
+    return {
+      matcher: 'SAME',
+      repetitions: 'SAME',
+      inputCache: 'SAME',
+      undo: false
+    }
   }
 }

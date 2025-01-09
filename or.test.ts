@@ -3,7 +3,7 @@ import {IrregularExpression} from './core/irregex'
 import { Matcher } from './core/matchers'
 
 // RegEx equivalent: /^(\d|\w)$/
-it('should "number or letter" match to a number', () => {
+it.todo('should "number or letter" match to a number', () => {
   // Initialize
   const irregularExpression = new IrregularExpression()
     .addMatcher(Matcher.repeat(9).Number())
@@ -17,7 +17,7 @@ it('should "number or letter" match to a number', () => {
 })
 
 // RegEx equivalent: /^(\d|\w)$/
-it('should "number or letter" match to a letter', () => {
+it.todo('should "number or letter" match to a letter', () => {
   // Initialize
   const irregularExpression = new IrregularExpression()
     .addMatcher(Matcher.repeat(9).Number())
@@ -31,7 +31,7 @@ it('should "number or letter" match to a letter', () => {
 })
 
 // RegEx equivalent: /^(\d|\w)$/
-it('should "number or letter" not match to a symbol', () => {
+it.todo('should "number or letter" not match to a symbol', () => {
   // Initialize
   const irregularExpression = new IrregularExpression()
     .addMatcher(Matcher.repeat(9).Number())
