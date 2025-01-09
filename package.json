@@ -9,7 +9,8 @@
     "typescript": "^5.0.0"
   },
   "scripts": {
-    "test:watch": "bun run test --watch"
+    "test:watch": "bun test --watch",
+    "test:perf": "bun test --rerun-each 100 --timeout 1000"
   },
   "dependencies": {
     "@stylistic/eslint-plugin": "^2.12.1",

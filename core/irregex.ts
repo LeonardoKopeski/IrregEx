@@ -1,5 +1,6 @@
 import { Matcher } from './matchers'
 import { EOI, SOI } from './symbols'
+import {MATCH, NO_MATCH, type MatchStringOutput} from './matcherOutputs'
 
 interface MatchingState{
   index: number
@@ -92,7 +93,7 @@ class IrregularExpressionTester {
   }
 
   private _handleMatcherOutput(
-    matcherOutput: 'MATCH' | 'NO_MATCH' | 'CONTINUE',
+    matcherOutput: MatchStringOutput,
     state: MatchingState
   ): {
       matcher: 'RESET' | 'NEXT' | 'SAME'
@@ -101,7 +102,7 @@ class IrregularExpressionTester {
       undo: boolean
     } {
     // if MATCH...
-    if (matcherOutput === 'MATCH') {
+    if (matcherOutput === MATCH) {
       if (state.repetitions + 1 < state.maxRepetitions) {
         // increase repetition count, unless if it will exceed the max repetitions
         return {
@@ -121,7 +122,7 @@ class IrregularExpressionTester {
     }
 
     // if NO_MATCH...
-    if (matcherOutput === 'NO_MATCH') {
+    if (matcherOutput === NO_MATCH) {
       if (state.repetitions + 1 > state.minRepetitions) {
         // if repetition count is above the minimum, move to the next matcher
         return {

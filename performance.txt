@@ -1,0 +1,2 @@
+Initial: 319 ms/run
+Omit NO_MATCH functions: 282 ms/run

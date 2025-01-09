@@ -1,3 +1,4 @@
+import { CONTINUE, MATCH, NO_MATCH, type MatchStringOutput, type MatchSymbolOutput } from './matcherOutputs'
 import { EOI, SOI } from './symbols'
 
 export abstract class Matcher {
@@ -5,8 +6,15 @@ export abstract class Matcher {
 
   repeat: [min: number, max: number] = [1, 1]
   
-  abstract match(input: string): 'MATCH' | 'NO_MATCH' | 'CONTINUE'
-  abstract matchSymbol(input: symbol): 'MATCH' | 'NO_MATCH'
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  match(_input: string): MatchStringOutput {
+    return NO_MATCH
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  matchSymbol(_input: symbol): MatchSymbolOutput {
+    return NO_MATCH
+  }
 
   static Literal(value: string) {
     return new LiteralMatcher(value)
@@ -98,15 +106,10 @@ class LiteralMatcher extends Matcher {
   }
 
   match(input: string) {
-    if (input === this.value) return 'MATCH'
+    if (input === this.value) return MATCH
+    if (this.value.startsWith(input)) return CONTINUE
 
-    if (this.value.startsWith(input)) return 'CONTINUE'
-
-    return 'NO_MATCH'
-  }
-
-  matchSymbol() {
-    return 'NO_MATCH' as const
+    return NO_MATCH
   }
 }
 
@@ -117,58 +120,46 @@ class NotMatcher extends Matcher {
 
   match(input: string) {
     const matcherOutput = this.matcher.match(input)
-    if (matcherOutput === 'NO_MATCH') return 'MATCH'
-    if (matcherOutput === 'MATCH') return 'NO_MATCH'
-    return 'CONTINUE'
+    if (matcherOutput === NO_MATCH) return MATCH
+    if (matcherOutput === MATCH) return NO_MATCH
+    return CONTINUE
   }
 
   matchSymbol(input: typeof EOI | typeof SOI) {
     const matcherOutput = this.matcher.matchSymbol(input)
-    if (matcherOutput === 'NO_MATCH') return 'MATCH'
-    return 'NO_MATCH'
+    if (matcherOutput === NO_MATCH) return MATCH
+    return NO_MATCH
   }
 }
 
 class AnyMatcher extends Matcher {
-  match() {
-    return 'MATCH' as const
+  match(): MatchStringOutput {
+    return MATCH
   }
-  matchSymbol() {
-    return 'MATCH' as const
+  matchSymbol(): MatchSymbolOutput {
+    return MATCH 
   }
 }
 
 class EndOfInputMatcher extends Matcher{
-  match() {
-    return 'NO_MATCH' as const
-  }
-
   matchSymbol(input: symbol) {
-    if (input === EOI) return 'MATCH'
-    return 'NO_MATCH'
+    if (input === EOI) return MATCH
+    return NO_MATCH
   }
 }
 
 class StartOfInputMatcher extends Matcher{
-  match() {
-    return 'NO_MATCH' as const
-  }
-
   matchSymbol(input: symbol) {
-    if (input === SOI) return 'MATCH'
-    return 'NO_MATCH'
+    if (input === SOI) return MATCH
+    return NO_MATCH
   }
 }
 
 const numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'] as const
 class NumberMatcher extends Matcher {
   match(input: string) {
-    if ((numbers as ReadonlyArray<string>).includes(input)) return 'MATCH'
-    return 'NO_MATCH'
-  }
-
-  matchSymbol() {
-    return 'NO_MATCH' as const
+    if ((numbers as ReadonlyArray<string>).includes(input)) return MATCH
+    return NO_MATCH
   }
 }
 
@@ -176,11 +167,7 @@ class NumberMatcher extends Matcher {
 const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'] as const
 class LetterMatcher extends Matcher {
   match(input: string) {
-    if ((letters as ReadonlyArray<string>).includes(input)) return 'MATCH'
-    return 'NO_MATCH'
-  }
-
-  matchSymbol() {
-    return 'NO_MATCH' as const
+    if ((letters as ReadonlyArray<string>).includes(input)) return MATCH
+    return NO_MATCH
   }
 }
