@@ -16,6 +16,10 @@ export abstract class Matcher {
     return new NumberMatcher()
   }
 
+  static Letter() {
+    return new LetterMatcher()
+  }
+
   static LineBreak() {
     return new LiteralMatcher('\n')
   }
@@ -156,6 +160,19 @@ const numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'] as const
 class NumberMatcher extends Matcher {
   match(input: string) {
     if ((numbers as ReadonlyArray<string>).includes(input)) return 'MATCH'
+    return 'NO_MATCH'
+  }
+
+  matchSymbol() {
+    return 'NO_MATCH' as const
+  }
+}
+
+
+const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'] as const
+class LetterMatcher extends Matcher {
+  match(input: string) {
+    if ((letters as ReadonlyArray<string>).includes(input)) return 'MATCH'
     return 'NO_MATCH'
   }
 
