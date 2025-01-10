@@ -32,11 +32,13 @@ export class IrregularExpression{
       matchers.unshift(Matcher.StartOfInput())
       matchers.push(Matcher.EndOfInput())
     }
-    return new IrregularExpressionTester(matchers)
+    return new IrregularExpressionTesterClass(matchers)
   }
 }
 
-class IrregularExpressionTester {
+export type IrregularExpressionTester = IrregularExpressionTesterClass
+
+class IrregularExpressionTesterClass {
   constructor(private readonly matchers: Matcher[]) { }
 
   test(value: string) {
