@@ -1,6 +1,6 @@
 import { test as it, expect } from 'bun:test'
-import { IrregularExpression } from './core/irregex'
-import { Matcher } from './core/matchers'
+import { IrregularExpression } from '../core/irregex'
+import { Matcher } from '../core/matchers'
 
 it('should match with end of input', () => {
   // Initialize

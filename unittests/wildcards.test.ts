@@ -1,6 +1,6 @@
 import { test as it, expect } from 'bun:test'
-import { IrregularExpression } from './core/irregex'
-import { Matcher } from './core/matchers'
+import { IrregularExpression } from '../core/irregex'
+import { Matcher } from '../core/matchers'
 
 // RegEx equivalent: /h.llo/
 it('should match with wildcard', () => {

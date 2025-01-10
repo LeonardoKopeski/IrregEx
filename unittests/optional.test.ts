@@ -1,6 +1,6 @@
 import { test as it, expect } from 'bun:test'
-import { IrregularExpression } from './core/irregex'
-import { Matcher } from './core/matchers'
+import { IrregularExpression } from '../core/irregex'
+import { Matcher } from '../core/matchers'
 
 // RegEx equivalent: /^\d{9}\d?$/
 it('should match if optional item is present', () => {

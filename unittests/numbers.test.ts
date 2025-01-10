@@ -1,6 +1,6 @@
 import {it, expect} from 'bun:test'
-import {IrregularExpression} from './core/irregex'
-import { Matcher } from './core/matchers'
+import {IrregularExpression} from '../core/irregex'
+import { Matcher } from '../core/matchers'
 
 // RegEx equivalent: /\d{9}/
 it('should match for a valid phone number', () => {

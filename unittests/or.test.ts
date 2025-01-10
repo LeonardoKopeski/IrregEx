@@ -1,6 +1,6 @@
 import {it, expect} from 'bun:test'
-import {IrregularExpression} from './core/irregex'
-import { Matcher } from './core/matchers'
+import {IrregularExpression} from '../core/irregex'
+import { Matcher } from '../core/matchers'
 
 // RegEx equivalent: /^(\d|\w)$/
 it('should "number or letter" match to a number', () => {
