@@ -5,4 +5,4 @@ import { stringMocks } from './stringMocks'
 runTestSet({
   regExMocks: [regExMocks[5]],
   stringMocks: [stringMocks[21]]
-}, 1000)
+}, 3)

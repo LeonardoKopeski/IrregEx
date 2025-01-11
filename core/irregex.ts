@@ -1,6 +1,6 @@
 import { Matcher } from './matchers'
 import { EOI, SOI } from './symbols'
-import {MATCH, NO_MATCH} from './matcherOutputs'
+import { MATCH, NO_MATCH } from './matcherOutputs'
 
 /**
  * irregular expression, an opinionated alternative to RegExp

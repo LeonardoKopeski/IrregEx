@@ -1,4 +1,3 @@
-import { letters, lowercaseLetters, numbers, uppercaseLetters } from './charArrays'
 import { CONTINUE, MATCH, NO_MATCH, type MatchStringOutput, type MatchSymbolOutput } from './matcherOutputs'
 import { EOI, SOI } from './symbols'
 
@@ -26,19 +25,19 @@ export abstract class Matcher {
   }
 
   static Number() {
-    return new EnumMatcher(numbers)
+    return new NumberMatcher()
   }
 
   static Letter() {
-    return new EnumMatcher(letters)
+    return new LetterMatcher()
   }
 
   static LowercaseLetter() {
-    return new EnumMatcher(lowercaseLetters)
+    return new LowercaseLetterMatcher()
   }
 
   static UppercaseLetter() {
-    return new EnumMatcher(uppercaseLetters)
+    return new UppercaseLetterMatcher()
   }
 
   static LineBreak() {
@@ -165,13 +164,62 @@ class SymbolMatcher extends Matcher{
   }
 }
 
-class EnumMatcher extends Matcher {
-  constructor(readonly values: ReadonlyArray<string>) {
+// class EnumMatcher extends Matcher {
+//   constructor(readonly values: ReadonlyArray<string>) {
+//     super()
+//   }
+
+//   match(input: string) {
+//     if (this.values.includes(input)) return MATCH
+//     return NO_MATCH
+//   }
+// }
+
+class NumberMatcher extends Matcher {
+  constructor() {
     super()
   }
 
   match(input: string) {
-    if (this.values.includes(input)) return MATCH
+    const charcode = input.charCodeAt(0)
+    if (charcode > 47 && charcode < 58) return MATCH
+    return NO_MATCH
+  }
+}
+
+class LetterMatcher extends Matcher {
+  constructor() {
+    super()
+  }
+
+  match(input: string) {
+    const charcode = input.charCodeAt(0)
+    if (charcode > 64 && charcode < 91) return MATCH
+    if (charcode > 96 && charcode < 123) return MATCH
+    return NO_MATCH
+  }
+}
+
+class UppercaseLetterMatcher extends Matcher {
+  constructor() {
+    super()
+  }
+
+  match(input: string) {
+    const charcode = input.charCodeAt(0)
+    if (charcode > 64 && charcode < 91) return MATCH
+    return NO_MATCH
+  }
+}
+
+class LowercaseLetterMatcher extends Matcher {
+  constructor() {
+    super()
+  }
+
+  match(input: string) {
+    const charcode = input.charCodeAt(0)
+    if (charcode > 96 && charcode < 123) return MATCH
     return NO_MATCH
   }
 }
