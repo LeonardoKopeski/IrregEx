@@ -1,4 +1,5 @@
 import { startPerformanceTest } from '../lib/performance/performance'
+import { median } from './math'
 import { regExMocks, type RegExMock } from './regExMocks'
 import { renderDiff } from './renderResult'
 import { stringMocks } from './stringMocks'
@@ -34,7 +35,7 @@ type Result = {
 }
 
 const results: Result[] = []
-const repetitions = 1000
+const repetitions = 10000
 for (let i = 0; i < repetitions; i++) {
   let id = 0
   for (const regExMock of regExMocks) {
@@ -61,10 +62,13 @@ for (let i = 0; i < repetitions; i++) {
 for (let i = 0; i < results.length; i++) {
   results[i].diff /= repetitions
 }
-console.table(results.sort((a, b) => a.diff - b.diff).map(elm => {
-  return {
-    'Tester': regExMocks.find(s=>s.id === elm.testerId)?.regEx,
-    'Tested String': elm.testedString,
-    'Diff': renderDiff(elm.diff)
-  }
-}))
+
+const sorted = results.sort((a, b) => a.diff - b.diff)
+
+console.log('======(Results)======')
+console.log('Best diff:', renderDiff(sorted[0].diff))
+console.log('Worst diff:', renderDiff(sorted[sorted.length-1].diff))
+console.log('Average diff:', renderDiff(results.reduce((acc, curr) => acc + curr.diff, 0) / results.length))
+console.log('Median diff:', renderDiff(median(results.map(r => r.diff))))
+
+console.log(`Success rate: ${Math.round(results.filter(r => r.success).length / results.length * 100)}%`)

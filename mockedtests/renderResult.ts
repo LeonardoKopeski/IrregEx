@@ -1,9 +1,9 @@
 export function renderDiff(diff: number) {
-  let diffString = Math.abs(Math.round(diff * 1000) / 1000).toString()
+  let diffString = (Math.round((diff/100)) / 10).toString()
   if (diff > 0) {
-    diffString = '\x1b[31m' + diffString + '\x1b[0m'
+    diffString = '\x1b[31m' + diffString + 'µs\x1b[0m'
   } else {
-    diffString = '\x1b[32m' + diffString + '\x1b[0m'
+    diffString = '\x1b[32m' + -diffString + 'µs\x1b[0m'
   }
 
   return diffString
